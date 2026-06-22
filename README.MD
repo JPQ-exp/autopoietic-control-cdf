@@ -203,6 +203,7 @@ Clone the repository and navigate into the project root directory:
 ```bash
 git clone https://github.com/JPQ-exp/autopoiesis-control-cdf.git
 cd autopoiesis-control-cdf
+´´´
 
 ### 4.2 Prerequisites
 This pipeline requires `numpy` for mathematical array processing and `matplotlib` for generating the dashboard figures.
