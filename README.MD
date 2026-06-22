@@ -96,7 +96,7 @@ When you call `engine.step()`, the compiler runs the exact G-space conversions, 
 
 ---
 
-###For Advanced Uses
+### For Advanced Uses
 
 The implementation of the **Coordinate-Driven Forcing version 2 Ultra-Linearization (CDF v2-UL)** Agent Compiler. This framework bridges high-level symbolic logic and continuous task-space state machines (System 2) with autonomic, physiologically-constrained metabolic dynamics (System 1). By performing diffeomorphic mapping ($\Phi$) of physically bounded environments into unconstrained virtual $G$-spaces, solving linear dynamics, and projecting them back via transcendental inversions ($\Phi^{-1}$), physiological and environmental safety are mathematically guaranteed by construction.
 
