@@ -4,7 +4,99 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 
-An implementation of the **Coordinate-Driven Forcing version 2 Ultra-Linearization (CDF v2-UL)** Agent Compiler. This framework bridges high-level symbolic logic and continuous task-space state machines (System 2) with autonomic, physiologically-constrained metabolic dynamics (System 1). By performing diffeomorphic mapping ($\Phi$) of physically bounded environments into unconstrained virtual $G$-spaces, solving linear dynamics, and projecting them back via transcendental inversions ($\Phi^{-1}$), physiological and environmental safety are mathematically guaranteed by construction.
+## What is the CDF v2-UL Agent Compiler?
+
+Most autonomous control frameworks (like traditional robotics or game AI) rely on complex, computationally heavy "active boundaries" or custom code constraints to prevent virtual agents or physical robots from running out of battery, getting lost, or colliding with hazards. 
+
+The **CDF v2-UL Agent Compiler** takes a different approach: **it guarantees safety and survival by construction**. 
+
+It behaves like a software compiler:
+1. **You write high-level, human-readable logic** using a simple, declarative embedded Domain-Specific Language (eDSL). You describe targets, priorities, and homeostatic needs (like hunger or battery life).
+2. **The Compiler translates your logic** into a set of unconstrained continuous coordinate equations ($G$-space) and exact integration steps.
+3. **The Runtime projects the behavior back** to the physical agent. Even if the agent is pushed to absolute extremes, the underlying mathematical mapping ensures it is physically impossible for its metabolic pools (battery/energy) to collapse or exceed physical limits.
+
+No complex active monitoring, safety handlers, or custom safety-override code are required. Safety and survival are woven directly into the coordinate geometry of the environment.
+
+---
+
+## Mini-Tutorial: Building an Agent in 4 Steps (No Math Required)
+
+You do not need to understand advanced calculus, Lambert $W$ functions, or differential geometry to use this framework. The eDSL abstracts the entire mathematical compiler behind a simple, intuitive Python API.
+
+Here is how you program a self-preserving warehouse robot in just a few lines of code:
+
+### Step 1: Define the Spatial Environment
+First, define the physical landmarks on the factory floor. Targets can pull the agent in (`ATTRACTIVE`) or push it away (`REPULSIVE`).
+
+```python
+from compiler.dsl import SpatialTarget
+
+# A delivery bay at coordinate [15, 2] that pulls the robot in
+delivery_bay = SpatialTarget("delivery", coords=[15.0, 2.0], behavior="ATTRACTIVE", gain=2.5)
+
+# A charging dock at coordinate [5, 1]
+charging_dock = SpatialTarget("charger", coords=[5.0, 1.0], behavior="ATTRACTIVE", gain=2.5)
+
+# A hazard at coordinate [10, 6] that repels the robot
+hazard_zone = SpatialTarget("obstacle", coords=[10.0, 6.0], behavior="REPULSIVE", influence_radius=1.8, gain=3.5)
+```
+
+### Step 2: Connect Targets to Action Drives
+Next, define the agent's decision-making channels. A `Drive` connects a physical target to a baseline importance (priority).
+
+```python
+from compiler.dsl import Drive
+
+# Cognitive drives are planned and can be inhibited by other priorities
+go_deliver = Drive("deliver_drive", target=delivery_bay, gating_type="COGNITIVE", default_priority=4.0)
+
+# Reactive drives are reflexive (for safety, urgency, and emergency actions)
+go_charge = Drive("recharge_drive", target=charging_dock, gating_type="REACTIVE", default_priority=0.5)
+avoid_hazard = Drive("avoid_obstacle", target=hazard_zone, gating_type="REACTIVE", default_priority=4.5)
+```
+
+### Step 3: Wire Up Homeostatic Needs (Feedback Loops)
+You want the robot to prioritize charging when its battery drops. A `FeedbackLoop` automatically monitors an internal state (like `"battery"`) and dynamically boosts the priority of a drive if that state gets low.
+
+```python
+from compiler.dsl import FeedbackLoop
+
+# If the "battery" pool drops below 35%, inject a priority bias of up to +25.0 to 'go_charge'
+battery_safety_loop = FeedbackLoop(
+    source_pool_name="battery",
+    target_drive=go_charge,
+    threshold=35.0,
+    gain=0.18,
+    max_bias=25.0,
+    response_direction="INVERSE" # Low battery causes high drive priority
+)
+```
+
+### Step 4: Assemble the Mission State Machine
+Finally, package the active workflow inside a simple state machine. The compiler handles the rest.
+
+```python
+from compiler.dsl import State, StateMachine
+from compiler.core import CDFCompilerEngine
+
+# Setup a cyclical mission: deliver goods, then return to idle/recharge
+mission = StateMachine(start_state="DELIVER_GOODS")
+mission.add_state("DELIVER_GOODS", State(drive=go_deliver, on_reach="RETURN_TO_DOCK"))
+mission.add_state("RETURN_TO_DOCK", State(drive=go_charge, on_reach="DELIVER_GOODS"))
+
+# Create and compile your engine
+engine = CDFCompilerEngine(mission=mission, bounds=(np.array([0.0, 0.0]), np.array([20.0, 20.0])))
+engine.register_background_drive(avoid_hazard) # Always avoid obstacles, regardless of current mission state
+engine.register_feedback_loop(battery_safety_loop)
+
+engine.compile_environment()
+```
+
+When you call `engine.step()`, the compiler runs the exact G-space conversions, resolves the lateral-inhibition competitive gating networks, and updates the robot's coordinates smoothly—leaving you with clean, reliable, and safely bounded agent control.
+
+##For Advanced Uses
+
+The implementation of the **Coordinate-Driven Forcing version 2 Ultra-Linearization (CDF v2-UL)** Agent Compiler. This framework bridges high-level symbolic logic and continuous task-space state machines (System 2) with autonomic, physiologically-constrained metabolic dynamics (System 1). By performing diffeomorphic mapping ($\Phi$) of physically bounded environments into unconstrained virtual $G$-spaces, solving linear dynamics, and projecting them back via transcendental inversions ($\Phi^{-1}$), physiological and environmental safety are mathematically guaranteed by construction.
 
 ---
 
