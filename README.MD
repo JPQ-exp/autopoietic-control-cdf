@@ -102,14 +102,22 @@ A hybrid deliberative-reactive architecture. A high-level symbolic AI planner mo
 
 ## 4. Getting Started
 
-### 4.1 Prerequisites
+### 4.1 Installation & Setup
+
+Clone the repository and navigate into the project root directory:
+
+```bash
+git clone https://github.com/JPQ-exp/autopoiesis-control-cdf.git
+cd autopoiesis-control-cdf
+
+### 4.2 Prerequisites
 This pipeline requires `numpy` for mathematical array processing and `matplotlib` for generating the dashboard figures.
 
 ```bash
 pip install numpy matplotlib
 ```
 
-### 4.2 Running the Visualizer
+### 4.3 Running the Visualizer
 To launch the interactive dashboard, run the `main.py` script from the root directory:
 
 ```bash
